@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='background.jpg') }}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chat with Raphael</h1>
+    <div>
+        <label for="message">Enter your message:</label>
+        <input type="text" id="message" name="message">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+    <div id="response"></div>
+    <div id="translated_response"></div>
+    <audio controls>
+        <source src="{{ url_for('static', filename='output.mp3') }}" type="audio/mpeg">
+    </audio>
+
+    <script>
+        async function sendMessage() {
+            const message = document.getElementById('message').value;
+            const responseDiv = document.getElementById('response');
+            const translatedResponseDiv = document.getElementById('translated_response');
+            const audio = document.querySelector('audio');
+
+            const response = await fetch('/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `message=${message}`
+            });
+
+            const data = await response.json();
+            responseDiv.textContent = 'Raphael: ' + data.response;
+            translatedResponseDiv.textContent = 'ID: ' + data.translated_response;
+            audio.load();
+        }
+    </script>
+</body>
+</html>
